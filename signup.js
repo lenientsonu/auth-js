@@ -1,5 +1,16 @@
+// Get the signup form
+const signupForm = document.getElementById("signupForm");
+
+// Add event listener for form submission
+signupForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
+  signUp(email, password);
+});
+
 async function signUp(email, password) {
-  const apiKey = "AIzaSyBPirCb-AtTBy18pMJervslVKazacVMelI";
+  const apiKey = "AIzaSyDt2CtJFOhXxqhoSyyTyEsCGTW1pjXal5g";
   const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`;
 
   const requestBody = {
@@ -34,13 +45,4 @@ async function signUp(email, password) {
   }
 }
 
-// Get the signup form
-const signupForm = document.getElementById("signupForm");
 
-// Add event listener for form submission
-signupForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
-  signUp(email, password);
-});

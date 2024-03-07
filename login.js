@@ -1,6 +1,17 @@
+// Get the login form
+const loginForm = document.getElementById("loginForm");
+
+// Add event listener for form submission
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+  login(email, password);
+});
+
 // Function to handle user login
 async function login(email, password) {
-  const apiKey = "AIzaSyBPirCb-AtTBy18pMJervslVKazacVMelI";
+  const apiKey = "AIzaSyDt2CtJFOhXxqhoSyyTyEsCGTW1pjXal5g";
   const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
 
   const requestBody = {
@@ -37,16 +48,7 @@ async function login(email, password) {
   }
 }
 
-// Get the login form
-const loginForm = document.getElementById("loginForm");
 
-// Add event listener for form submission
-loginForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-  login(email, password);
-});
 
 
 
