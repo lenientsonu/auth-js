@@ -72,3 +72,14 @@ async function login(email, password) {
 //     return true;
 //   }
   
+// logout button
+document.addEventListener('DOMContentLoaded', function() {
+    // Your JavaScript code here, including the event listener for the logout button
+    document.getElementById('logoutButton').addEventListener('click', function() {
+        // Remove the token from local storage
+        localStorage.removeItem('token');
+        console.log("Logout button clicked"); // Debugging message
+        // Redirect the user to the login page
+        window.location.href = 'login.html';
+    });
+});
