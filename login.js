@@ -81,5 +81,5 @@ async function login(email, password) {
    //     console.log("Logout button clicked"); // Debugging message
         // Redirect the user to the login page
   //      window.location.href = 'login.html';
-    });
+  //  });
 });
