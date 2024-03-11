@@ -73,13 +73,13 @@ async function login(email, password) {
 //   }
   
 // logout button
-document.addEventListener('DOMContentLoaded', function() {
+// document.addEventListener('DOMContentLoaded', function() {
     // Your JavaScript code here, including the event listener for the logout button
-    document.getElementById('logoutButton').addEventListener('click', function() {
+//    document.getElementById('logoutButton').addEventListener('click', function() {
         // Remove the token from local storage
-        localStorage.removeItem('token');
-        console.log("Logout button clicked"); // Debugging message
+//        localStorage.removeItem('token');
+   //     console.log("Logout button clicked"); // Debugging message
         // Redirect the user to the login page
-        window.location.href = 'login.html';
+  //      window.location.href = 'login.html';
     });
 });
