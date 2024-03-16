@@ -3,12 +3,20 @@ const mysql = require('mysql');
 const url = require('url');
 const querystring = require('querystring');
 
+// Create a MySQL connection pool
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'your_mysql_username',
+  password: 'your_mysql_password',
+  database: 'your_database_name',
+  connectionLimit: 10 // Adjust the connection limit as per your requirements
+});
 
-// create a server to collect data from client and send it to mysql db
+// Create an HTTP server
 const server = http.createServer((req, res) => {
   const reqUrl = url.parse(req.url);
-  
-  // Handling POST requests
+
+  // Handle POST requests to add data
   if (req.method === 'POST' && reqUrl.pathname === '/addData') {
     let body = '';
     req.on('data', (chunk) => {
@@ -16,39 +24,66 @@ const server = http.createServer((req, res) => {
     });
     req.on('end', () => {
       const postData = querystring.parse(body);
-      // Connect to MySQL database
-      const connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'your_mysql_username',
-        password: 'your_mysql_password',
-        database: 'your_database_name'
-      });
-      connection.connect((err) => {
+
+      // Acquire a connection from the pool
+      pool.getConnection((err, connection) => {
         if (err) {
-          console.error('Error connecting to MySQL:', err);
+          console.error('Error getting MySQL connection:', err);
           res.writeHead(500, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Failed to connect to database' }));
+          res.end(JSON.stringify({ error: 'Failed to get database connection' }));
           return;
         }
-        console.log('Connected to MySQL database');
-        const sql = `INSERT INTO your_table_name (field1, field2, field3) VALUES (?, ?, ?)`;
-        const values = [postData.field1, postData.field2, postData.field3]; // Adjust field names as per your requirements
-        connection.query(sql, values, (err, result) => {
+
+        // Perform an INSERT query to add data
+        connection.query('INSERT INTO your_table_name SET ?', postData, (err, result) => {
+          connection.release(); // Release the connection back to the pool
+
           if (err) {
-            console.error('Error inserting data:', err);
+            console.error('Error executing MySQL query:', err);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'An error occurred while inserting data' }));
-          } else {
-            console.log('Data inserted successfully');
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: 'Data inserted successfully' }));
+            return;
           }
-          connection.end(); // Close connection after query execution
+
+          // Send success response
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: 'Data inserted successfully' }));
         });
       });
     });
-  } else {
-    // Handling other requests
+  }
+  
+  // Handle GET requests to retrieve data
+  else if (req.method === 'GET' && reqUrl.pathname === '/getData') {
+    // Acquire a connection from the pool
+    pool.getConnection((err, connection) => {
+      if (err) {
+        console.error('Error getting MySQL connection:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Failed to get database connection' }));
+        return;
+      }
+
+      // Perform a SELECT query to retrieve data
+      connection.query('SELECT * FROM your_table_name', (err, rows) => {
+        connection.release(); // Release the connection back to the pool
+
+        if (err) {
+          console.error('Error executing MySQL query:', err);
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'An error occurred while retrieving data' }));
+          return;
+        }
+
+        // Send the retrieved data as JSON response
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(rows));
+      });
+    });
+  }
+
+  // Handle other requests
+  else {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Route not found' }));
   }
